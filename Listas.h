@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdlib.h>
 
 struct Jogada {
     int deLinha,deColuna,paraLinha,paraColuna;
