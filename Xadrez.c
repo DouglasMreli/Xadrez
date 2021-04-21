@@ -530,18 +530,7 @@ int main() {
     struct Jogada *escolhida = NULL;
     while (fimDeJogo==0){
         jogadas=CalculaMovimentosPossiveis(posAtual);
-        do{
-            printf("> Digite a coordenada (Linha e Coluna) da peça que quer mover:\n");
-            scanf("%d %d",&deLinha,&deColuna);
-            printf("> Agora digite a coordenada da casa de destino:\n");
-            scanf("%d %d",&paraLinha,&paraColuna);
-            deLinha--; deColuna--; paraLinha--; paraColuna--;
-            escolhida = BuscaJogada(jogadas,paraLinha,paraColuna,deLinha,deColuna);
-            if(escolhida == NULL){
-                printf("> Opção inválida,tente novamente!\n\n");
-            }
-        }while(escolhida == NULL);
-        
+        escolhida = BuscaJogada(jogadas);
         fimDeJogo = ExecutaJogada(*escolhida,&posAtual);
         DesenhaTabuleiro(posAtual);
         posAtual.jogVez = posAtual.jogVez * (-1);
