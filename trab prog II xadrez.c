@@ -1,5 +1,3 @@
-//Ayla Rodrigues e Douglas Mareli
-//Eu vencerei Beth Harmon
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -67,13 +65,13 @@ void DesenhaTabuleiro(struct Posicao atual) {
     }
     printf("      1   2   3   4   5   6   7   8 \n");
     
-    printf("\n\n Negativo = pretas; Positivo = brancas\n 1= Peão; 2= Cavalo; 3= Bispo;\n 4= Torre; 5= Dama; 6= Rei;\n\n");
+    printf("\n\n Negativo = pretas; Positivo = brancas\n 1= PeÃ£o; 2= Cavalo; 3= Bispo;\n 4= Torre; 5= Dama; 6= Rei;\n\n");
 }
 
 void *CalculaPeao(struct Jogada *lista,int linha,int coluna,struct Posicao posAtual) {
     int peca = posAtual.tab[linha][coluna]->codigo;
     
-    if (linha+peca>=0 && linha+peca<=7 ){//não está na primeira nem na última linha
+    if (linha+peca>=0 && linha+peca<=7 ){//nÃ£o estÃ¡ na primeira nem na Ãºltima linha
         if (posAtual.tab[linha+peca][coluna] == NULL){ //pode avancar
             InsereJogada(lista,linha+peca,coluna,linha,coluna);
         }
@@ -119,14 +117,14 @@ void *CalculaCavalo(struct Jogada *lista, int linha, int coluna,struct Posicao p
         }
     }
     if (linha<7){//uma linha acima
-        if (coluna<6 && posAtual.tab[linha+1][coluna+2] == NULL){ //duas casas à direita
+        if (coluna<6 && posAtual.tab[linha+1][coluna+2] == NULL){ //duas casas Ã  direita
             InsereJogada(lista,linha+1,coluna+2,linha,coluna);          
         }else if(coluna<6 && (posAtual.tab[linha+1][coluna+2]->codigo)*peca<0){
             InsereJogada(lista,linha+1,coluna+2,linha,coluna);
             posAtual.tab[linha+1][coluna+2]->ataques++;
         }
         
-        if (coluna>1 && posAtual.tab[linha+1][coluna-2]== NULL){ //duas casas à esquerda
+        if (coluna>1 && posAtual.tab[linha+1][coluna-2]== NULL){ //duas casas Ã  esquerda
             InsereJogada(lista,linha+1,coluna-2,linha,coluna);             
         }else if (coluna>1 && (posAtual.tab[linha+1][coluna-2]->codigo)*peca<0) {
             InsereJogada(lista,linha+1,coluna-2,linha,coluna);
@@ -149,14 +147,14 @@ void *CalculaCavalo(struct Jogada *lista, int linha, int coluna,struct Posicao p
         }
     }
     if (linha>0){//uma linha abaixo
-        if (coluna<6 && posAtual.tab[linha-1][coluna+2] == NULL){ //duas casas à direita
+        if (coluna<6 && posAtual.tab[linha-1][coluna+2] == NULL){ //duas casas Ã  direita
             InsereJogada(lista,linha-1,coluna+2,linha,coluna); 
         }else if (coluna<6 && (posAtual.tab[linha-1][coluna+2]->codigo)*peca<=0) {
             InsereJogada(lista,linha-1,coluna+2,linha,coluna); 
             posAtual.tab[linha-1][coluna+2]->ataques++;
         }
         
-        if (coluna>1 &&posAtual.tab[linha-1][coluna-2] == NULL){ //duas casas à esquerd
+        if (coluna>1 &&posAtual.tab[linha-1][coluna-2] == NULL){ //duas casas Ã  esquerd
             InsereJogada(lista,linha-1,coluna-2,linha,coluna); 
         }else if (coluna>1 && (posAtual.tab[linha-1][coluna-2]->codigo)*peca<=0) {
             InsereJogada(lista,linha-1,coluna-2,linha,coluna); 
@@ -459,16 +457,16 @@ int ExecutaJogada(struct Jogada jog, struct Posicao *posAtual) {
     int x=0;
     struct Peca *peca = posAtual->tab[jog.deLinha][jog.deColuna];
 
-    posAtual->tab[jog.deLinha][jog.deColuna] = NULL; //retira a peça do ligar
+    posAtual->tab[jog.deLinha][jog.deColuna] = NULL; //retira a peÃ§a do ligar
 
-    if (posAtual->tab[jog.paraLinha][jog.paraColuna]!=NULL){ //a peça fará uma captura
+    if (posAtual->tab[jog.paraLinha][jog.paraColuna]!=NULL){ //a peÃ§a farÃ¡ uma captura
         if (abs(posAtual->tab[jog.paraLinha][jog.paraColuna]->codigo)==REI) //rei capturado
             x=1;
 
-        RemovePeca(posAtual->tab[jog.paraLinha][jog.paraColuna]); //retira a peça que foi capturada da sua lista
+        RemovePeca(posAtual->tab[jog.paraLinha][jog.paraColuna]); //retira a peÃ§a que foi capturada da sua lista
         if (posAtual->jogVez==1)
-            posAtual->qtdPretas--; //capturou peça preta
-        else posAtual->qtdBrancas--;//capturou peça branca
+            posAtual->qtdPretas--; //capturou peÃ§a preta
+        else posAtual->qtdBrancas--;//capturou peÃ§a branca
     }
 
     posAtual->tab[jog.paraLinha][jog.paraColuna] = peca;
@@ -533,14 +531,14 @@ int main() {
     while (fimDeJogo==0){
         jogadas=CalculaMovimentosPossiveis(posAtual);
         do{
-            printf("> Digite a coordenada (Linha e Coluna) da peça que quer mover:\n");
+            printf("> Digite a coordenada (Linha e Coluna) da peÃ§a que quer mover:\n");
             scanf("%d %d",&deLinha,&deColuna);
             printf("> Agora digite a coordenada da casa de destino:\n");
             scanf("%d %d",&paraLinha,&paraColuna);
             deLinha--; deColuna--; paraLinha--; paraColuna--;
             escolhida = BuscaJogada(jogadas,paraLinha,paraColuna,deLinha,deColuna);
             if(escolhida == NULL){
-                printf("> Opção inválida,tente novamente!\n\n");
+                printf("> OpÃ§Ã£o invÃ¡lida,tente novamente!\n\n");
             }
         }while(escolhida == NULL);
         
@@ -549,8 +547,8 @@ int main() {
         posAtual.jogVez = posAtual.jogVez * (-1);
         jogadas = DestroiJogada(jogadas);
         if(fimDeJogo == 1){
-            if(posAtual.jogVez == 1) printf("\n----- VITÓRIA DAS PRETAS -----\n");
-            else printf("\n----- VITÓRIA DAS BRANCAS -----\n");
+            if(posAtual.jogVez == 1) printf("\n----- VITÃ“RIA DAS PRETAS -----\n");
+            else printf("\n----- VITÃ“RIA DAS BRANCAS -----\n");
         }
     }
 
