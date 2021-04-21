@@ -39,15 +39,24 @@ void *InsereJogada(struct Jogada *lista,int paraLinha,int paraColuna,int deLinha
 }
 
 void *BuscaJogada(struct Jogada *lista,int paraLinha,int paraColuna,int deLinha,int deColuna) {
-    struct Jogada *aux = lista->prox;
-    while(aux != lista && (aux->deLinha != deLinha || aux->deColuna != deColuna || aux->paraLinha !=paraLinha || aux->paraColuna !=paraColuna)){
-        aux= aux->prox;
-    }
-        if(aux!=lista){
-            return aux;
-        }else{
-            return NULL;
+    struct Jogada *aux = lista;
+    int deLinha,deColuna,paraLinha,paraColuna;
+    do{
+        printf("> Digite a coordenada (Linha e Coluna) da peça que quer mover:\n");
+        scanf("%d %d",&deLinha,&deColuna);
+        printf("> Agora digite a coordenada da casa de destino:\n");
+    	scanf("%d %d",&paraLinha,&paraColuna);
+        deLinha--; deColuna--; paraLinha--; paraColuna--;
+	   	aux = aux->prox;    
+        while(aux != lista && (aux->deLinha != deLinha || aux->deColuna != deColuna || aux->paraLinha !=paraLinha || aux->paraColuna !=paraColuna)){
+            aux= aux->prox;
         }
+            if(aux!=lista){
+                return aux;
+            }else{
+                printf("> Opção inválida,tente novamente!\n\n");
+            }
+        }while(aux == lista);
     } 
     
     struct Jogada *DestroiJogada(struct Jogada *lista) {
