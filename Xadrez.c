@@ -507,6 +507,51 @@ double AvaliaPosicao(struct Posicao pos) {
 	return avaliacao;
 }
 
+struct Jogada ExecutaIA(struct Posicao pos,int nivel, double alfa, double beta){
+	struct Jogada *lista,*jogadaAux,*listaBrancas,*listaPretas;
+	struct Jogada melhorJogada, jogadaIA;
+	struct Posicao posCopia;
+	double melhorValor, valorJogada;
+	int podado = 0;
+	
+	if(nivel % 2 == 0) {
+		melhorValor = -INFINITY;
+	}else {
+		melhorValor = INFINITY;
+	}
+	
+	if(pos.jogVez == 1) {
+		pos.jogVez = pos.jogVez * -1;
+	} 
+		listaPretas = CalculaMovimentosPossiveis(pos);
+		pos.jogVez = pos.jogVez * -1;
+		listaBrancas = CalculaMovimentosPossiveis(pos);
+	
+	if(nivel % 2 == 0) {
+		lista = listaPretas;
+	} else {
+		lista = listaBrancas;
+	}
+	
+	jogadaAux = lista->prox;
+	
+	while(jogadaAux != lista && podado == 0) {
+		posCopia = CopiaPosicao(pos,posCopia);
+		ExecutaJogada(*jogadaAux,&posCopia);
+		
+		if(nivel < MAX_NIVEL) {
+			
+			if (nivel < MAX_NIVEL && nivel % 2 == 0) {
+				jogadaIA = ExecutaIA(posCopia,nivel+1,melhorValor,beta);
+			}else{
+				jogadaIA = ExecutaIA(posCopia,nivel+1,alfa,melhorValor);
+			}
+			
+			ExecutaJogada(jogadaIA,&posCopia);
+		}
+	}
+}
+
 int main() {
     
     setlocale(LC_ALL,"");
@@ -516,7 +561,6 @@ int main() {
     char iniciar[10];
     struct Jogada *jogadas;
     struct Posicao posAtual;
-    struct Posicao posCopia;
 
     printf("---------- Bem vindo! ----------\n");
     printf("> Pronto para vencer Beth Harmon?\n\n\nDigite 'pronto' para gerar o tabuleiro!\n");
