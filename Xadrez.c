@@ -11,6 +11,7 @@
 #define TORRE   4
 #define RAINHA  5
 #define REI     6
+#define MAX_NIVEL 6
 
 struct Posicao {
     int qtdBrancas;
