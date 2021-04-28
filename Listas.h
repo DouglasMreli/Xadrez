@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <stdlib.h>
+#include <stdio.h>
 
 struct Jogada {
     int deLinha,deColuna,paraLinha,paraColuna;
@@ -39,29 +39,32 @@ void *InsereJogada(struct Jogada *lista,int paraLinha,int paraColuna,int deLinha
     
 }
 
-void *BuscaJogada(struct Jogada *lista,int paraLinha,int paraColuna,int deLinha,int deColuna) {
-    struct Jogada *aux = lista;
-    int deLinha,deColuna,paraLinha,paraColuna;
-    do{
+struct Jogada BuscaJogada(struct Jogada *lista) {
+	struct Jogada *aux = lista;
+	struct Jogada escolhida;
+	int deLinha,deColuna,paraLinha,paraColuna;
+	do{
         printf("> Digite a coordenada (Linha e Coluna) da peça que quer mover:\n");
         scanf("%d %d",&deLinha,&deColuna);
         printf("> Agora digite a coordenada da casa de destino:\n");
     	scanf("%d %d",&paraLinha,&paraColuna);
         deLinha--; deColuna--; paraLinha--; paraColuna--;
-	   	aux = aux->prox;    
-        while(aux != lista && (aux->deLinha != deLinha || aux->deColuna != deColuna || aux->paraLinha !=paraLinha || aux->paraColuna !=paraColuna)){
-            aux= aux->prox;
-        }
-            if(aux!=lista){
-                return aux;
-            }else{
-                printf("> Opção inválida,tente novamente!\n\n");
-            }
-        }while(aux == lista);
+	   	aux = aux->prox;
+		while(aux != lista && (aux->deLinha != deLinha || aux->deColuna != deColuna || aux->paraLinha !=paraLinha || aux->paraColuna !=paraColuna)){
+		    aux= aux->prox;
+		}
+		
+	    if(aux!=lista){
+	    	escolhida = *aux;
+	        return escolhida;
+	    }else{
+	        printf("> Opção inválida,tente novamente!\n\n");
+	    }
+	    }while(aux == lista);
     } 
     
-    struct Jogada *DestroiJogada(struct Jogada *lista) {
-    struct Jogada *aux;
+struct Jogada *DestroiJogadas(struct Jogada *lista) {
+    struct Jogada *aux = lista->prox;
     lista->ant->prox=NULL;
     while(lista != NULL) {
         aux = lista-> prox;
@@ -114,5 +117,4 @@ void RemovePeca(struct Peca *aux) {
     aux->ant->prox = aux->prox;
     free(aux);
 }
-
 
