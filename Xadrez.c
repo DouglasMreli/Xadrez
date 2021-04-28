@@ -11,7 +11,7 @@
 #define TORRE   4
 #define RAINHA  5
 #define REI     6
-#define MAX_NIVEL 6
+#define MAX_NIVEL 5
 
 struct Posicao {
     int qtdBrancas;
@@ -488,22 +488,49 @@ int ExecutaJogada(struct Jogada jog, struct Posicao *posAtual) {
 double AvaliaPosicao(struct Posicao pos) {
 	
 	double valorBranca = 0, valorPreta = 0, avaliacao;
-	
 	struct Peca *aux = pos.brancas->prox;
+	
 	while(aux!=pos.brancas){
-		valorBranca = valorBranca + aux->codigo;
-		valorPreta = valorPreta + aux->ataques;
+		if(aux->codigo == 1) {
+			valorBranca = valorBranca + (abs(0 - aux->linha)*0.05) +1;
+		}
+		switch(aux->codigo) {
+			case CAVALO: valorBranca = valorBranca+3.2; 
+						valorPreta = valorPreta + aux->ataques*3.2; break;
+			case BISPO: valorBranca = valorBranca+3.33; 
+						valorPreta = valorPreta + aux->ataques*3.33; break;
+			case TORRE: valorBranca = valorBranca+5.1; 
+						valorPreta = valorPreta + aux->ataques*5.1; break;
+			case RAINHA: valorBranca = valorBranca+8.8; 
+						valorPreta = valorPreta + aux->ataques*8.8; break;
+			case REI: valorBranca = valorBranca+100; 
+						valorPreta = valorPreta + aux->ataques*100; break;
+		}
+		
 		aux = aux->prox;
 	}
 	
 	aux = pos.pretas->prox;
-	while(aux!=pos.pretas){
-		valorPreta = valorPreta + aux->codigo;
-		valorBranca = valorBranca + aux->ataques;
+	while(aux!=pos.pretas) {
+		if(aux->codigo == -1) {
+		valorPreta = valorPreta + ((7 - aux->linha)*0.05) + 1; 
+		}
+		switch(aux->codigo) {
+			case -CAVALO: valorPreta = valorPreta+3.2; 
+						valorBranca = valorBranca + aux->ataques*3.2; break;
+			case -BISPO: valorPreta = valorPreta+3.33; 
+						valorBranca = valorBranca + aux->ataques*3.33; break;
+			case -TORRE: valorPreta = valorPreta+5.1; 
+						valorBranca = valorBranca + aux->ataques*5.1; break;
+			case -RAINHA: valorPreta =valorPreta+8.8; 
+						valorBranca = valorBranca + aux->ataques*8.8; break;
+			case -REI: valorPreta = valorPreta+100; 
+						valorBranca = valorBranca + aux->ataques*100; break;
+		}
 		aux = aux->prox;
 	}
 	
-	avaliacao = valorPreta*(-1) - valorBranca;
+	avaliacao = valorPreta - valorBranca;
 	 
 	return avaliacao;
 }
@@ -550,21 +577,44 @@ struct Jogada ExecutaIA(struct Posicao pos,int nivel, double alfa, double beta){
 			
 			ExecutaJogada(jogadaIA,&posCopia);
 		}
+		
+		valorJogada = AvaliaPosicao(posCopia);
+		
+		if(valorJogada < alfa || valorJogada > beta) {
+			podado = 1;
+		}
+		
+		if(nivel % 2 == 0 && valorJogada >= melhorValor) {
+			melhorValor = valorJogada;
+			melhorJogada = *jogadaAux;
+		}else if(nivel % 2 != 0 && valorJogada <= melhorValor) {
+			melhorValor = valorJogada;
+			melhorJogada = *jogadaAux;
+		}
+		
+		jogadaAux = jogadaAux->prox;
+		LiberaMemoria(&posCopia);
 	}
+	
+	listaBrancas = DestroiJogadas(listaBrancas);
+	listaPretas = DestroiJogadas(listaPretas);
+	
+	return melhorJogada;
 }
 
 int main() {
     
     setlocale(LC_ALL,"");
+    FILE *jogadasSalvas;
     int fimDeJogo=0;
-    int deLinha,deColuna,paraLinha,paraColuna,escolha;
-    int qtdJogadas;
     char iniciar[10];
-    struct Jogada *jogadas;
+    struct Jogada *jogadas = NULL;
     struct Posicao posAtual;
-
+	
+    SalvaJogada(jogadasSalvas,jogadas);
+	
     printf("---------- Bem vindo! ----------\n");
-    printf("> Pronto para vencer Beth Harmon?\n\n\nDigite 'pronto' para gerar o tabuleiro!\n");
+    printf("> Pronto para jogar xadrez?\n\n\nDigite 'pronto' para gerar o tabuleiro!\n");
     scanf("%s",iniciar);
     
     if(strcmp(iniciar,"pronto") ==0){
@@ -572,20 +622,28 @@ int main() {
         DesenhaTabuleiro(posAtual);
     }
     
-    struct Jogada *escolhida = NULL;
-    while (fimDeJogo==0){
-        jogadas=CalculaMovimentosPossiveis(posAtual);
-        escolhida = BuscaJogada(jogadas);
-        fimDeJogo = ExecutaJogada(*escolhida,&posAtual);
+   struct Jogada escolhida;
+    while (fimDeJogo==0) {
+    	
+    	if(posAtual.jogVez == 1) {
+	 	jogadas=CalculaMovimentosPossiveis(posAtual);
+	        escolhida = BuscaJogada(jogadas);
+	        DestroiJogadas(jogadas);
+        }else {
+        	escolhida = ExecutaIA(posAtual,0,-INFINITY,INFINITY);
+	}
+	    
+	SalvaJogada(jogadasSalvas,&escolhida);	
+        fimDeJogo = ExecutaJogada(escolhida,&posAtual);
         DesenhaTabuleiro(posAtual);
-        posAtual.jogVez = posAtual.jogVez * (-1);
-        jogadas = DestroiJogada(jogadas);
-        if(fimDeJogo == 1){
-            if(posAtual.jogVez == 1) printf("\n----- VITÓRIA DAS PRETAS -----\n");
-            else printf("\n----- VITÓRIA DAS BRANCAS -----\n");
-        }
+	}
+	
+    if(posAtual.jogVez == 1) {	
+	printf("\n----- VITÓRIA DAS PRETAS -----\n");
+    }else {
+	printf("\n----- VITÓRIA DAS BRANCAS -----\n");
     }
-
+    
     LiberaMemoria(&posAtual);
     
     return 0;
